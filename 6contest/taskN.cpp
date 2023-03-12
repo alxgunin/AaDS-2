@@ -5,16 +5,8 @@
 #include <iostream>
 #include <vector>
 
-signed main() {
-  std::string a, b;
-  std::cin >> a >> b;
-  int n = a.size(), m = b.size(), k;
-  std::cin >> k;
+std::vector<std::vector<std::vector<int>>> Calc(int n, int k, int m, std::string& a, std::string& b) {
   std::vector<std::vector<std::vector<int>>> dp(m + 1, std::vector<std::vector<int>>(k + 1, std::vector<int>(k + 1)));
-  if (std::abs(n - m) > k) {
-    std::cout << -1 << '\n';
-    return 0;
-  }
   for (int i = 1; i <= m; ++i) {
     for (int j = 0; j <= std::min(n, k); ++j) {
       for (int q = 0; q <= std::min(k - j, i); ++q) {
@@ -30,6 +22,19 @@ signed main() {
       }
     }
   }
+  return dp;
+}
+
+signed main() {
+  std::string a, b;
+  std::cin >> a >> b;
+  int n = a.size(), m = b.size(), k;
+  std::cin >> k;
+  if (std::abs(n - m) > k) {
+    std::cout << -1 << '\n';
+    return 0;
+  }
+  std::vector<std::vector<std::vector<int>>> dp = Calc(n, k, m, a, b);
   int ans = 0;
   for (int j = 0; j <= k; ++j) {
     for (int q = 0; q <= k; ++q) {
