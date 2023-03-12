@@ -23,16 +23,8 @@ int Prev(int mask, int first, int sz) {
   return res;
 }
 
-signed main() {
-  int n, m;
-  std::cin >> n >> m;
-  std::vector<std::vector<char>> map(n, std::vector<char>(m));
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < m; ++j) {
-      std::cin >> map[i][j];
-    }
-  }
-  std::vector<std::vector<Ll>> dp(m, std::vector<Ll>(1 << n));
+void Calc(int n, int m, const std::vector<std::vector<char>>& map,
+          std::vector<std::vector<Ll>>& dp) {
   for (int mask = 0; mask < (1 << n); ++mask) {
     int bad = 0;
     for (int bit = 0; bit < n && bad == 0; ++bit) {
@@ -70,6 +62,19 @@ signed main() {
       }
     }
   }
+}
+
+signed main() {
+  int n, m;
+  std::cin >> n >> m;
+  std::vector<std::vector<char>> map(n, std::vector<char>(m));
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) {
+      std::cin >> map[i][j];
+    }
+  }
+  std::vector<std::vector<Ll>> dp(m, std::vector<Ll>(1 << n));
+  Calc(n, m, map, dp);
   Ll ans = 0;
   for (int mask = 0; mask < (1 << n); ++mask) {
     ans = (ans + dp[m - 1][mask]) % kMod;
