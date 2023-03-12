@@ -3,14 +3,12 @@
 #include <iostream>
 #include <vector>
 
-int dp[1'000][100'000];
-
-int Calc(int i, int j) {
+int Calc(int i, int j, int** dp) {
   if (dp[i][j] == 0 && std::min(i, j) != 0) {
     if (i == 1) {
       dp[i][j] = j;
     } else {
-      dp[i][j] = Calc(i, j - 1) + Calc(i - 1, j - 1) + 1;
+      dp[i][j] = Calc(i, j - 1, dp) + Calc(i - 1, j - 1, dp) + 1;
     }
   }
   return dp[i][j];
@@ -29,11 +27,23 @@ int main() {
     std::cout << cnt << '\n';
     return 0;
   }
+  int** dp = new int*[30];
+  for (int i = 0; i < 30; ++i) {
+    dp[i] = new int[100'000]();
+  }
   for (int j = 1; j < 100'000; ++j) {
-    if (Calc(k, j) >= n - 1) {
+    if (Calc(k, j, dp) >= n - 1) {
       std::cout << j << '\n';
+      for (int i = 0; i < 30; ++i) {
+        delete[] dp[i];
+      }
+      delete[] dp;
       return 0;
     }
   }
+  for (int i = 0; i < 30; ++i) {
+    delete[] dp[i];
+  }
+  delete[] dp;
   std::cout << -1 << '\n';
 }
