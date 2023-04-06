@@ -2,59 +2,75 @@
 #include <iostream>
 #include <vector>
 
-std::vector<std::vector<int>> g, gt;
-std::vector<int> used, topsort;
+struct Graph {
+  Graph() = default;
 
-int color = 0;
+  int n, m;
+  int color = 0;
+  std::vector<std::vector<int>> g, gt;
+  std::vector<int> used, topsort;
 
-void Dfs1(int v) {
-  used[v] = 1;
-  for (int u : g[v]) {
-    if (used[u] == 0) {
-      Dfs1(u);
+  void Dfs(int v) {
+    used[v] = 1;
+    for (int u : g[v]) {
+      if (used[u] == 0) {
+        Dfs(u);
+      }
+    }
+    topsort.push_back(v);
+  }
+
+  void ShareColor(int v) {
+    used[v] = color;
+    for (int u : gt[v]) {
+      if (used[u] == 0) {
+        ShareColor(u);
+      }
     }
   }
-  topsort.push_back(v);
-}
 
-void Dfs2(int v) {
-  used[v] = color;
-  for (int u : gt[v]) {
-    if (used[u] == 0) {
-      Dfs2(u);
+  void Input() {
+    std::cin >> n >> m;
+    g.resize(n);
+    gt.resize(n);
+    used.resize(n);
+    for (int i = 0; i < m; ++i) {
+      int u, v;
+      std::cin >> u >> v;
+      u--;
+      v--;
+      g[u].push_back(v);
+      gt[v].push_back(u);
     }
   }
-}
+
+  void GetTopSort() {
+    for (int i = 0; i < n; ++i) {
+      if (used[i] == 0) {
+        Dfs(i);
+      }
+    }
+  }
+
+  void Colorize() {
+    used.assign(n, 0);
+    std::reverse(topsort.begin(), topsort.end());
+    for (int i : topsort) {
+      if (used[i] == 0) {
+        ++color;
+        ShareColor(i);
+      }
+    }
+  }
+};
 
 signed main() {
-  int n, m;
-  std::cin >> n >> m;
-  g.resize(n);
-  gt.resize(n);
-  used.resize(n);
-  for (int i = 0; i < m; ++i) {
-    int u, v;
-    std::cin >> u >> v;
-    u--;
-    v--;
-    g[u].push_back(v);
-    gt[v].push_back(u);
-  }
-  for (int i = 0; i < n; ++i) {
-    if (used[i] == 0) {
-      Dfs1(i);
-    }
-  }
-  used.assign(n, 0);
-  std::reverse(topsort.begin(), topsort.end());
-  for (int i : topsort) {
-    if (used[i] == 0) {
-      ++color;
-      Dfs2(i);
-    }
-  }
-  std::cout << color << '\n';
-  for (int i : used) {
+  Graph g;
+  g.Input();
+  g.GetTopSort();
+  g.Colorize();
+  std::cout << g.color << '\n';
+  for (int i : g.used) {
     std::cout << i << ' ';
   }
   return 0;
