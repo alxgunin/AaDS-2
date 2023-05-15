@@ -7,20 +7,36 @@ const int kInf = 2009000999;
 const int kMax = 100000;
 const int kDefault = -1;
 
-void Solve() {
-  int nn;
+struct Edge {
+  int to, val;
+};
+
+void Input(int& nn, std::vector<std::vector<Edge>>& gg) {
   std::cin >> nn;
-  std::vector<std::vector<Pii>> gg(nn);
+  gg.resize(nn);
   for (int i = 0; i < nn; ++i) {
     for (int j = 0; j < nn; ++j) {
       int val;
       std::cin >> val;
       if (val != kMax) {
-        gg[i].push_back(Pii(j, val));
+        gg[i].push_back(Edge{j, val});
       }
     }
   }
+}
 
+void Output(std::vector<int>& ans) {
+  std::cout << "YES\n";
+  std::cout << ans.size() << '\n';
+  for (int vertex : ans) {
+    std::cout << vertex + 1 << ' ';
+  }
+  std::cout << '\n';
+}
+
+void Output() { std::cout << "NO\n"; }
+
+bool Solve(int nn, std::vector<std::vector<Edge>>& gg, std::vector<int>& ans) {
   std::vector<std::vector<int>> dp(nn, std::vector<int>(nn + 1, kInf));
   std::vector<int> pref(nn, -1);
   dp[0][0] = 0;
@@ -39,30 +55,31 @@ void Solve() {
     }
   }
   if (last == kDefault) {
-    std::cout << "NO\n";
-    return;
+    return false;
   }
-  std::cout << "YES\n";
   for (int i = 0; i < nn; ++i) {
     last = pref[last];
   }
-  std::vector<int> ans;
   int cur = last;
   do {
     ans.push_back(cur);
     cur = pref[cur];
   } while (cur != last);
   ans.push_back(ans[0]);
-  std::cout << ans.size() << '\n';
-  for (int vertex : ans) {
-    std::cout << vertex + 1 << ' ';
-  }
-  std::cout << '\n';
+  return true;
 }
 
 signed main() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(0);
-  Solve();
+  int nn;
+  std::vector<std::vector<Edge>> gg;
+  Input(nn, gg);
+  std::vector<int> ans;
+  if (Solve(nn, gg, ans)) {
+    Output(ans);
+  } else {
+    Output();
+  }
   return 0;
 }
