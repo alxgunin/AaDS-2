@@ -10,26 +10,34 @@ struct Edge {
 using Pii = std::pair<int, int>;
 const int kInf = 2009000999;
 
+struct Elem {
+  int dist, vertex;
+};
+
+bool operator<(const Elem& aa, const Elem& bb) {
+  return (aa.dist < bb.dist) || (aa.dist == bb.dist && aa.vertex < bb.vertex);
+}
+
 std::vector<int> Solve(int nn, std::vector<std::vector<Edge>>& gg) {
   int start = 0;
   std::cin >> start;
   std::vector<int> dist(nn, kInf);
   dist[start] = 0;
-  std::set<Pii> ss;
+  std::set<Elem> ss;
   for (int i = 0; i < nn; ++i) {
-    ss.insert(Pii(dist[i], i));
+    ss.insert(Elem{dist[i], i});
   }
   while (!ss.empty()) {
-    int cur_dist = (*ss.begin()).first;
-    int vv = (*ss.begin()).second;
+    int cur_dist = (*ss.begin()).dist;
+    int vv = (*ss.begin()).vertex;
     ss.erase(ss.begin());
     for (Edge& ee : gg[vv]) {
       int uu = ee.to;
       int cost = ee.cost;
       if (dist[uu] > cur_dist + cost) {
-        ss.erase(Pii(dist[uu], uu));
+        ss.erase(Elem{dist[uu], uu});
         dist[uu] = cur_dist + cost;
-        ss.insert(Pii(dist[uu], uu));
+        ss.insert(Elem{dist[uu], uu});
       }
     }
   }
