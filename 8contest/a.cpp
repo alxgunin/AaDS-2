@@ -3,22 +3,14 @@
 #include <set>
 #include <vector>
 
+struct Edge {
+  int to, cost;
+};
+
 using Pii = std::pair<int, int>;
 const int kInf = 2009000999;
 
-void Solve() {
-  int nn;
-  int mm;
-  std::cin >> nn >> mm;
-  std::vector<std::vector<Pii>> gg(nn);
-  for (int i = 0; i < mm; ++i) {
-    int vv;
-    int uu;
-    int cc;
-    std::cin >> vv >> uu >> cc;
-    gg[vv].push_back(Pii{uu, cc});
-    gg[uu].push_back(Pii{vv, cc});
-  }
+std::vector<int> Solve(int nn, std::vector<std::vector<Edge>>& gg) {
   int start = 0;
   std::cin >> start;
   std::vector<int> dist(nn, kInf);
@@ -31,7 +23,9 @@ void Solve() {
     int cur_dist = (*ss.begin()).first;
     int vv = (*ss.begin()).second;
     ss.erase(ss.begin());
-    for (auto& [uu, cost] : gg[vv]) {
+    for (Edge& ee : gg[vv]) {
+      int uu = ee.to;
+      int cost = ee.cost;
       if (dist[uu] > cur_dist + cost) {
         ss.erase(Pii(dist[uu], uu));
         dist[uu] = cur_dist + cost;
@@ -39,6 +33,23 @@ void Solve() {
       }
     }
   }
+  return dist;
+}
+
+void Input(int& nn, int& mm, std::vector<std::vector<Edge>>& gg) {
+  std::cin >> nn >> mm;
+  gg.resize(nn);
+  for (int i = 0; i < mm; ++i) {
+    int vv;
+    int uu;
+    int cc;
+    std::cin >> vv >> uu >> cc;
+    gg[vv].push_back(Edge{uu, cc});
+    gg[uu].push_back(Edge{vv, cc});
+  }
+}
+
+void Output(std::vector<int>& dist) {
   for (int ii : dist) {
     std::cout << ii << ' ';
   }
@@ -49,7 +60,12 @@ signed main() {
   int kk;
   std::cin >> kk;
   for (int i = 0; i < kk; ++i) {
-    Solve();
+    int nn;
+    int mm;
+    std::vector<std::vector<Edge>> gg;
+    Input(nn, mm, gg);
+    std::vector<int> dist = Solve(nn, gg);
+    Output(dist);
   }
   return 0;
 }
